@@ -105,7 +105,7 @@ import authRoutes from "./routes/auth.js";
 import productRoutes from './routes/product.js';
 
 const app = express();
-
+// ser
 app.use(express.json());
 app.use(cors({
     origin: "http://localhost:3000",
