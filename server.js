@@ -103,6 +103,7 @@ import bodyParser from "body-parser";
 import userRoutes from "./routes/users.js";
 import authRoutes from "./routes/auth.js";
 import productRoutes from './routes/product.js';
+import orderRoutes from './routes/order.js';
 
 const app = express();
 // ser
@@ -127,6 +128,7 @@ app.use(session({
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Route to check if the user is authenticated
 app.get("/api/auth/authenticated", (req, res) => {
@@ -140,3 +142,4 @@ app.get("/api/auth/authenticated", (req, res) => {
 app.listen(3001, () => {
     console.log("Server started on port 3001");
 });
+
