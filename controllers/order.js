@@ -3,7 +3,8 @@ import db from "../connect.js";
 // Controller to handle fetching all orders
 const getOrder = (req, res) => {
     // Query to fetch all orders from the database
-    const query = 'SELECT * FROM orders';
+    // const query = 'SELECT * FROM orders';
+    const query = 'SELECT id, material, quantity,price, name, status, DATE_FORMAT(date, "%Y-%m-%d") AS date FROM orders';
   
     // Execute the query
     db.query(query, (err, results) => {
