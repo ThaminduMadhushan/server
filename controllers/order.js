@@ -4,7 +4,7 @@ import db from "../connect.js";
 const getOrder = (req, res) => {
     // Query to fetch all orders from the database
     // const query = 'SELECT * FROM orders';
-    const query = 'SELECT id, material, quantity,price, name, status, DATE_FORMAT(date, "%Y-%m-%d") AS date FROM orders';
+    const query = 'SELECT id, material, quantity,price, name, status, username,  DATE_FORMAT(date, "%Y-%m-%d") AS date FROM orders';
   
     // Execute the query
     db.query(query, (err, results) => {
@@ -21,23 +21,23 @@ const getOrder = (req, res) => {
 
 // Controller to handle creating a new order
 const createOrder = (req, res) => {
-    const { name, material , quantity, price  } = req.body;
+    const { name, material , quantity, price, username  } = req.body;
   
     // Validation
-    if (!name || !material || !quantity || !price) {
+    if (!name || !material || !quantity || !price || !username) {
       return res.status(400).json({ error: 'Please provide name, price, and quantity.' });
     }
   
     // Insert the new order into the database
-    const query = 'INSERT INTO orders (name, material, quantity, price, status) VALUES (?, ?, ?, ?, "pending")';
-    db.query(query, [name, material, quantity, price], (err, result) => {
+    const query = 'INSERT INTO orders (name, material, quantity, price,username, status ) VALUES (?, ?, ?, ?, ?, "pending")';
+    db.query(query, [name, material, quantity, price, username], (err, result) => {
       if (err) {
         console.error('Error creating order:', err);
         return res.status(500).json({ error: 'Error creating order.' });
       }
       // Return the newly created order
       const orderId = result.insertId;
-      res.status(201).json({ id: orderId, name, material, quantity, price });
+      res.status(201).json({ id: orderId, name, material, quantity, price, username });
     });
 };
 
