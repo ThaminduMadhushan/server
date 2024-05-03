@@ -21,23 +21,23 @@ const getOrder = (req, res) => {
 
 // Controller to handle creating a new order
 const createOrder = (req, res) => {
-    const { name,material , quantity } = req.body;
+    const { name, material , quantity, price  } = req.body;
   
     // Validation
-    if (!name || !material || !quantity) {
+    if (!name || !material || !quantity || !price) {
       return res.status(400).json({ error: 'Please provide name, price, and quantity.' });
     }
   
     // Insert the new order into the database
-    const query = 'INSERT INTO orders (name, material, quantity, status) VALUES (?, ?, ?, "pending")';
-    db.query(query, [name, material, quantity,], (err, result) => {
+    const query = 'INSERT INTO orders (name, material, quantity, price, status) VALUES (?, ?, ?, ?, "pending")';
+    db.query(query, [name, material, quantity, price], (err, result) => {
       if (err) {
         console.error('Error creating order:', err);
         return res.status(500).json({ error: 'Error creating order.' });
       }
       // Return the newly created order
       const orderId = result.insertId;
-      res.status(201).json({ id: orderId, name, material, quantity });
+      res.status(201).json({ id: orderId, name, material, quantity, price });
     });
 };
 
@@ -66,16 +66,16 @@ const deleteOrder = (req, res) => {
 
 const updateOrder = (req, res) => {
   const orderId = req.params.id;
-  const { name, material, quantity } = req.body;
+  const { name, material, quantity, price } = req.body;
 
   // Validation
-  if (!name || !material || !quantity) {
-      return res.status(400).json({ error: 'Please provide name, material, and quantity.' });
+  if (!name || !material || !quantity || !price) {
+      return res.status(400).json({ error: 'Please provide name, material, price and quantity.' });
   }
 
   // Update the order in the database
-  const query = 'UPDATE orders SET name = ?, material = ?, quantity = ? WHERE id = ?';
-  db.query(query, [name, material, quantity, orderId], (err, result) => {
+  const query = 'UPDATE orders SET name = ?, material = ?, quantity = ?, price = ? WHERE id = ?';
+  db.query(query, [name, material, quantity,price, orderId], (err, result) => {
       if (err) {
           console.error('Error updating order:', err);
           return res.status(500).json({ error: 'Error updating order.' });
@@ -90,5 +90,26 @@ const updateOrder = (req, res) => {
   });
 };
 
-export { getOrder, createOrder, deleteOrder, updateOrder };
+const acceptOrder = (req, res) => {
+  const orderId = req.params.id;
+  const { status } = req.body;
+
+  // Update the order in the database
+  const query = 'UPDATE orders SET status = ? WHERE id = ?';
+  db.query(query, [`accept`, orderId], (err, result) => {
+      if (err) {
+          console.error('Error accept order:', err);
+          return res.status(500).json({ error: 'Error accepting order.' });
+      }
+
+      if (result.affectedRows === 0) {
+          // If no rows were affected, it means the order with the given ID doesn't exist
+          return res.status(404).json({ error: 'order not found' });
+      }
+
+      res.status(200).json({ message: 'order accepted successfully' });
+  });
+};
+
+export { getOrder, createOrder, deleteOrder, updateOrder, acceptOrder };
 
