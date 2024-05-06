@@ -2,9 +2,9 @@
 // import db from "../connect.js";
 
 // export const register = (req, res) => {
-//   const q = "SELECT * FROM users WHERE firstname = ?";
+//   const q = "SELECT * FROM users WHERE email = ?";
 
-//   db.query(q, [req.body.username], (err, data) => {
+//   db.query(q, [req.body.email], (err, data) => {
 //     if (err) return res.json(err);
 //     if (data.length) return res.status(409).json("User already exists!");
 
@@ -12,12 +12,13 @@
 //     const hash = bcrypt.hashSync(req.body.password, salt);
 
 //     const insertQuery =
-//       "INSERT INTO users (`firstname`, `lastname`, `email`,`password`) VALUES (?)";
+//       "INSERT INTO users (`firstname`, `lastname`, `email`,`password`, `role`) VALUES (?)";
 //     const values = [
 //       req.body.firstname,
 //       req.body.lastname,
 //       req.body.email,
 //       hash,
+//       req.body.role,
 //     ];
 
 //     db.query(insertQuery, [values], (err, data) => {
@@ -41,12 +42,7 @@
 //           if (err) {
 //             return res.json({ error: "password comparison error" });
 //           }
-//           // if (response) {
-//           //   req.session.email = data[0].email;
-//           //   return res.json({ Login: true });
-//           // } else {
-//           //   return res.json({ error: "Wrong password" });
-//           // }
+         
 //           if (response) {
 //             req.session.user = {
 //               id: data[0].id,
@@ -55,6 +51,7 @@
 //             };
 //             return res.json({ Login: true, user: req.session.user });
 //           }
+//           return res.json({ Login: false });
 //         }
 //       );
 //     } else {
@@ -64,13 +61,13 @@
 // };
 
 // export const logout = (req, res) => {
-//   res
-//     .clearCookie("access_token", {
-//       sameSite: "none",
-//       secure: true,
-//     })
-//     .status(200)
-//     .json("User has been logged out.");
+//   req.session.destroy((err) => {
+//     if (err) {
+//       return res.status(500).json({ error: "Logout failed" });
+//     }
+//     res.clearCookie("connect.sid");
+//     res.status(200).json("User has been logged out.");
+//   });
 // };
 
 import bcrypt from "bcrypt";
@@ -86,18 +83,42 @@ export const register = (req, res) => {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
 
-    const insertQuery =
-      "INSERT INTO users (`firstname`, `lastname`, `email`,`password`) VALUES (?)";
-    const values = [
-      req.body.firstname,
-      req.body.lastname,
+    const insertUserQuery =
+      "INSERT INTO users (`email`,`password`, `role`) VALUES (?, ?, ?)";
+    const userValues = [
       req.body.email,
       hash,
+      req.body.role,
     ];
 
-    db.query(insertQuery, [values], (err, data) => {
+    db.query(insertUserQuery, userValues, (err, userResult) => {
       if (err) return res.json(err);
-      return res.status(200).json("User has been created.");
+      const userid = userResult.insertId;
+
+      let insertRoleSpecificQuery;
+      let roleSpecificValues;
+
+      switch (req.body.role) {
+        case 'admin':
+          insertRoleSpecificQuery = `INSERT INTO admins (user_id, firstname, lastname) VALUES (?, ?, ?)`;
+          roleSpecificValues = [userid, req.body.firstname, req.body.lastname,];
+          break;
+        case 'customer':
+          insertRoleSpecificQuery = `INSERT INTO customers (user_id, firstname, lastname) VALUES (?, ?, ?)`;
+          roleSpecificValues = [userid, req.body.firstname, req.body.lastname,];
+          break;
+        case 'supplier':
+          insertRoleSpecificQuery = `INSERT INTO suppliers user_id, firstname, lastname) VALUES (?, ?, ?)`;
+          roleSpecificValues = [userid, req.body.firstname, req.body.lastname,];
+          break;
+        default:
+          return res.status(400).json("Invalid role");
+      }
+
+      db.query(insertRoleSpecificQuery, roleSpecificValues, (err) => {
+        if (err) return res.json(err);
+        return res.status(200).json("User registered successfully.");
+      });
     });
   });
 };
@@ -106,7 +127,7 @@ export const login = (req, res) => {
   const sql = "SELECT * FROM users WHERE email = ?";
   db.query(sql, [req.body.email], (err, data) => {
     if (err) {
-      return res.json({ error: "Error for fetching" });
+      return res.json({ error: "Error fetching user data" });
     }
     if (data.length > 0) {
       bcrypt.compare(
@@ -114,14 +135,13 @@ export const login = (req, res) => {
         data[0].password,
         (err, response) => {
           if (err) {
-            return res.json({ error: "password comparison error" });
+            return res.json({ error: "Password comparison error" });
           }
-         
           if (response) {
             req.session.user = {
-              id: data[0].id,
-              firstname: data[0].firstname,
-              email: data[0].email
+              id: data[0].user_id,
+              email: data[0].email,
+              role: data[0].role
             };
             return res.json({ Login: true, user: req.session.user });
           }
@@ -137,9 +157,8 @@ export const login = (req, res) => {
 export const logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      return res.status(500).json({ error: "Logout failed" });
+      return res.json({ error: "Logout failed" });
     }
-    res.clearCookie("connect.sid");
-    res.status(200).json("User has been logged out.");
+    res.json({ message: "Logout successful" });
   });
 };

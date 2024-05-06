@@ -105,6 +105,7 @@ import authRoutes from "./routes/auth.js";
 import productRoutes from './routes/product.js';
 import orderRoutes from './routes/order.js';
 import materialRoutes from './routes/materials.js';
+import employeeRoutes from './routes/employee.js';
 
 const app = express();
 // ser
@@ -131,6 +132,7 @@ app.use("/api/auth", authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/materials', materialRoutes);
+app.use('/api/employees', employeeRoutes);
 
 // Route to check if the user is authenticated
 app.get("/api/auth/authenticated", (req, res) => {
