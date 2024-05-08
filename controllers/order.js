@@ -51,25 +51,6 @@ const deleteOrder = (req, res) => {
 };
 
 
-// const cancelOrder = (req, res) => {
-//     const orderId = req.params.id;
-    
-//     const query = 'UPDATE orders SET status = "cancelled" WHERE order_id = ?';
-//     db.query(query, [orderId], (err, result) => {
-//         if (err) {
-//             console.error('Error canceling order:', err);
-//             res.status(500).json({ error: 'Error canceling order' });
-//             return;
-//         }
-//         if (result.affectedRows === 0) {
-//             res.status(404).json({ error: 'Order not found' });
-//             return;
-//         }
-//         res.status(200).json({ message: 'Order cancelled successfully' });
-//     });
-// };
-
-
 const cancelOrder = (req, res) => {
     const orderId = req.params.id;
     const adminId = req.body.adminId; // Get the admin ID from the request body
