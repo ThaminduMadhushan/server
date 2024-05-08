@@ -13,11 +13,7 @@ export const register = (req, res) => {
 
     const insertUserQuery =
       "INSERT INTO users (`email`,`password`, `role`) VALUES (?, ?, ?)";
-    const userValues = [
-      req.body.email,
-      hash,
-      req.body.role,
-    ];
+    const userValues = [req.body.email, hash, req.body.role];
 
     db.query(insertUserQuery, userValues, (err, userResult) => {
       if (err) return res.json(err);
@@ -27,25 +23,25 @@ export const register = (req, res) => {
       let roleSpecificValues;
 
       switch (req.body.role) {
-        case 'admin':
+        case "admin":
           insertRoleSpecificQuery = `INSERT INTO admins (user_id, firstname, lastname) VALUES (?, ?, ?)`;
-          roleSpecificValues = [userid, req.body.firstname, req.body.lastname,];
+          roleSpecificValues = [userid, req.body.firstname, req.body.lastname];
           break;
-        case 'customer':
+        case "customer":
           insertRoleSpecificQuery = `INSERT INTO customers (user_id, firstname, lastname) VALUES (?, ?, ?)`;
-          roleSpecificValues = [userid, req.body.firstname, req.body.lastname,];
+          roleSpecificValues = [userid, req.body.firstname, req.body.lastname];
           break;
-        case 'supplier':
-          insertRoleSpecificQuery = `INSERT INTO suppliers user_id, firstname, lastname) VALUES (?, ?, ?)`;
-          roleSpecificValues = [userid, req.body.firstname, req.body.lastname,];
+        case "supplier":
+          insertRoleSpecificQuery = `INSERT INTO suppliers (user_id, firstname, lastname) VALUES (?, ?, ?)`;
+          roleSpecificValues = [userid, req.body.firstname, req.body.lastname];
           break;
-          case 'bailer':
-          insertRoleSpecificQuery = `INSERT INTO bailers user_id, firstname, lastname) VALUES (?, ?, ?)`;
-          roleSpecificValues = [userid, req.body.firstname, req.body.lastname,];
+        case "bailer":
+          insertRoleSpecificQuery = `INSERT INTO bailers (user_id, firstname, lastname) VALUES (?, ?, ?)`;
+          roleSpecificValues = [userid, req.body.firstname, req.body.lastname];
           break;
-          case 'driver':
-          insertRoleSpecificQuery = `INSERT INTO drivers user_id, firstname, lastname) VALUES (?, ?, ?)`;
-          roleSpecificValues = [userid, req.body.firstname, req.body.lastname,];
+        case "driver":
+          insertRoleSpecificQuery = `INSERT INTO drivers (user_id, firstname, lastname) VALUES (?, ?, ?)`;
+          roleSpecificValues = [userid, req.body.firstname, req.body.lastname];
           break;
         default:
           return res.status(400).json("Invalid role");
@@ -77,7 +73,7 @@ export const login = (req, res) => {
             req.session.user = {
               id: data[0].user_id,
               email: data[0].email,
-              role: data[0].role
+              role: data[0].role,
             };
             return res.json({ Login: true, user: req.session.user });
           }
@@ -90,20 +86,18 @@ export const login = (req, res) => {
   });
 };
 
-
 export const logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      console.error('Logout error:', err);
+      console.error("Logout error:", err);
       return res.status(500).json({ error: "Logout failed" });
     }
     // Clear the session cookie
-    res.clearCookie('connect.sid'); // Replace 'connect.sid' with your cookie name if different
-    
+    res.clearCookie("connect.sid"); // Replace 'connect.sid' with your cookie name if different
+
     // Inspect response headers to verify if the cookie is cleared
-    console.log('Response Headers:', res.getHeaders());
-    
+    console.log("Response Headers:", res.getHeaders());
+
     return res.json({ message: "Logout successful" });
   });
 };
-;
