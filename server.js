@@ -12,6 +12,8 @@ import materialRoutes from "./routes/materials.js";
 import employeeRoutes from "./routes/employee.js";
 import customerRoutes from "./routes/customer.js";
 import adminRoutes from "./routes/admin.js";
+import binRoutes from "./routes/bin.js";
+import binTypeRoutes from "./routes/binType.js";
 
 const app = express();
 // ser
@@ -45,6 +47,8 @@ app.use("/api/materials", materialRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/customer", customerRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/bin", binRoutes);
+app.use("/api/binType", binTypeRoutes);
 
 // Route to check if the user is authenticated
 app.get("/api/auth/authenticated", (req, res) => {
