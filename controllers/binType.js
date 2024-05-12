@@ -3,7 +3,7 @@ import db from "../connect.js";
 // Controller to handle fetching all bins
 const getBinType = (req, res) => {
     // Query to fetch all bins from the database
-    const query = 'SELECT type_id, type_name, admin_id, DATE_FORMAT(created_at, "%Y-%m-%d") AS created_at, DATE_FORMAT(updated_at, "%Y-%m-%d") AS updated_at FROM bin_types';
+    const query = 'SELECT bin_types.type_id, bin_types.type_name, admins.firstname AS admin_name, DATE_FORMAT(bin_types.created_at, "%Y-%m-%d") AS created_at, DATE_FORMAT(bin_types.updated_at, "%Y-%m-%d") AS updated_at FROM bin_types LEFT JOIN admins ON bin_types.admin_id = admins.admin_id';
   
     // Execute the query
     db.query(query, (err, results) => {
@@ -65,7 +65,7 @@ const deleteBinType = (req, res) => {
 };
 
 const updateBinType = (req, res) => {
-  const binId = req.params.id;
+  const binTypeId = req.params.id;
   const { name, admin_id } = req.body;
 
   // Validation
@@ -75,7 +75,7 @@ const updateBinType = (req, res) => {
 
   // Update the bin in the database
   const query = 'UPDATE bin_types SET type_name = ?, admin_id = ? WHERE type_id = ?';
-  db.query(query, [name, admin_id, binId], (err, result) => {
+  db.query(query, [name, admin_id, binTypeId], (err, result) => {
       if (err) {
           console.error('Error updating bin type:', err);
           return res.status(500).json({ error: 'Error updating bin type.' });
