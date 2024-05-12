@@ -3,7 +3,7 @@ import db from "../connect.js";
 // Controller to handle fetching all bins
 const getBin = (req, res) => {
     // Query to fetch all bins from the database
-    const query = 'SELECT bin_id, total_quantity, bin_name, address, admin_id, DATE_FORMAT(created_at, "%Y-%m-%d") AS created_at, DATE_FORMAT(updated_at, "%Y-%m-%d") AS updated_at FROM bins';
+    const query = 'SELECT bins.bin_id, bins.total_quantity, bins.bin_name, bins.address, admins.firstname AS admin_name, bin_types.type_name, DATE_FORMAT(bins.created_at, "%Y-%m-%d") AS created_at, DATE_FORMAT(bins.updated_at, "%Y-%m-%d") AS updated_at FROM bins LEFT JOIN admins ON bins.admin_id = admins.admin_id LEFT JOIN bin_types ON bins.type_id = bin_types.type_id';
   
     // Execute the query
     db.query(query, (err, results) => {
