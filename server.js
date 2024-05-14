@@ -14,6 +14,8 @@ import customerRoutes from "./routes/customer.js";
 import adminRoutes from "./routes/admin.js";
 import binRoutes from "./routes/bin.js";
 import binTypeRoutes from "./routes/binType.js";
+import driverRoutes from "./routes/driver.js";
+import Collection from "./routes/collection.js";
 
 const app = express();
 // ser
@@ -49,6 +51,10 @@ app.use("/api/customer", customerRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/bin", binRoutes);
 app.use("/api/binType", binTypeRoutes);
+app.use("/api/driver", driverRoutes);
+app.use("/api/collection", Collection);
+
+
 
 // Route to check if the user is authenticated
 app.get("/api/auth/authenticated", (req, res) => {
