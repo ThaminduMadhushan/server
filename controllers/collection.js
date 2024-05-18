@@ -56,4 +56,18 @@ const getDriversCollection =  (req, res) => {
     });
 };
   
-export { createDriverCollection, getDriversCollection, deleteDriverCollection };
+const createCollection = (req, res) => {
+    const { admin_id, material_id, quantity, price, collector_id } = req.body;
+    const query = 'INSERT INTO collections (admin_id, material_id, quantity, price, user_id) VALUES (?, ?, ?, ?, ?)';
+    db.query(query, [admin_id, material_id, quantity, price, collector_id], (err, result) => {
+        if (err) {
+            console.error('Error creating collection:', err);
+            res.status(500).json({ error: 'Error creating collection' });
+            return;
+        }
+        const collectionId = result.insertId;
+        res.status(201).json({ id: collectionId, admin_id, material_id, quantity, price, collector_id });
+    });
+};
+
+export { createDriverCollection, getDriversCollection, deleteDriverCollection, createCollection };
