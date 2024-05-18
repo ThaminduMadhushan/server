@@ -58,6 +58,27 @@ const getDriverCollection =  (req, res) => {
   });
 };
 
+const getUserId = (req, res) => {
+  const driver_id = req.params.id;
+
+  const query = 'SELECT * FROM drivers WHERE driver_id = ?';
+
+  // Execute the query with the user ID as a parameter
+  db.query(query, [driver_id], (err, results) => {
+    if (err) {
+      console.error('Error fetching user: ', err);
+      res.status(500).json({ error: 'Error fetching user' });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).json({ error: 'User not found for the given driver Id' });
+      return;
+    }
+
+    res.json(results[0]);
+  });
+};
 
   
-export { getDriver, getBin, getDriverCollection };
+export { getDriver, getBin, getDriverCollection, getUserId };
