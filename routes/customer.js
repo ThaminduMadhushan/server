@@ -1,16 +1,16 @@
 import express from 'express';
-import { getCustomer } from '../controllers/customer.js';
-
+import { getCustomer, getPendingOrder, getAcceptedOrder, getCancelledOrder, getHomeAcceptedOrder, getHomeCancelledOrder, updateOrderSeen, updateAbout, updateDetails } from '../controllers/customer.js';
 
 const router = express.Router();
 
-// Route to handle fetching all products
 router.get('/:id', getCustomer);
-// Route to handle adding a new product
-// router.post('/', createMaterial);
-// // Route to handle deleting a product
-// router.delete('/:id', deleteMaterial); // Define the delete route
-
-// router.put('/:id', updateMaterial);
+router.get('/pending/:id', getPendingOrder);
+router.get('/accepted/:id', getAcceptedOrder);
+router.get('/cancelled/:id', getCancelledOrder);
+router.get('/home/accepted/:id', getHomeAcceptedOrder); 
+router.get('/home/cancelled/:id', getHomeCancelledOrder);
+router.post('/seen', updateOrderSeen);
+router.put('/edit/about/:id', updateAbout);
+router.put('/:id', updateDetails);
 
 export default router;

@@ -3,13 +3,15 @@ import {
   createDriverCollection,
   getDriversCollection,
   deleteDriverCollection,
-  createCollection
+  createCollection,
+  getSupplierCollection
 } from "../controllers/collection.js";
 
 const router = express.Router();
 
 router.post("/", createDriverCollection);
 router.get("/driver", getDriversCollection);
+router.get("/supplier", getSupplierCollection);
 router.delete("/driver/:id", deleteDriverCollection);
 router.post("/driver", createCollection);
 
