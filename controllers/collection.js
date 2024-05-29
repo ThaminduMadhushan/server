@@ -2,11 +2,11 @@ import db from "../connect.js";
 
 const createDriverCollection = (req, res) => {
     const { driverId, collectionName, binId, quantity, material_id } = req.body;
-    const query = 'INSERT INTO driver_collections (driver_id, name, quantity, bin_id, material_id) VALUES (?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO driver_collections (driver_id, name, quantity, bin_id, material_id, status) VALUES (?, ?, ?, ?, ?, "pending")';
     db.query(query, [driverId, collectionName, quantity, binId, material_id], (err, result) => {
         if (err) {
             console.error('Error creating collection:', err);
-            res.status(500).json({ error: 'Error creating collection' });
+            res.status(500).json({ error: 'Error creating collection'});
             return;
         }
         const collectionId = result.insertId;
@@ -15,11 +15,10 @@ const createDriverCollection = (req, res) => {
 };
 
 const getDriversCollection =  (req, res) => {
-    const collection_id = req.params.id;
-    
+
     const query = 'SELECT driver_collections.collection_id, driver_collections.driver_id, driver_collections.name AS collection_name, driver_collections.quantity, DATE_FORMAT(driver_collections.created_at, "%Y-%m-%d %H:%i:%s") AS created_at, DATE_FORMAT(driver_collections.updated_at, "%Y-%m-%d %H:%i:%s") AS updated_at, drivers.firstname AS driver_name, bins.bin_name, materials.name AS material_name FROM driver_collections LEFT JOIN drivers ON drivers.driver_id = driver_collections.driver_id LEFT JOIN bins ON bins.bin_id = driver_collections.bin_id LEFT JOIN materials ON materials.material_id = driver_collections.material_id';
   
-    db.query(query, [collection_id], (err, result) => {
+    db.query(query, (err, result) => {
         if (err) {
             console.error('Error fetching collection:', err);
             res.status(500).json({ error: 'Error fetching collection' });
@@ -56,8 +55,22 @@ const getDriversCollection =  (req, res) => {
     });
 };
   
+// const createCollection = (req, res) => {
+//     const { admin_id, material_id, quantity, price, collector_id, collectionId } = req.body;
+//     const query = 'INSERT INTO collections (admin_id, material_id, quantity, price, user_id) VALUES (?, ?, ?, ?, ?)';
+//     db.query(query, [admin_id, material_id, quantity, price, collector_id], (err, result) => {
+//         if (err) {
+//             console.error('Error creating collection:', err);
+//             res.status(500).json({ error: 'Error creating collection' });
+//             return;
+//         }
+//         const collectionId = result.insertId;
+//         res.status(201).json({ id: collectionId, admin_id, material_id, quantity, price, collector_id });
+//     });
+// };
+
 const createCollection = (req, res) => {
-    const { admin_id, material_id, quantity, price, collector_id } = req.body;
+    const { admin_id, material_id, quantity, price, collector_id, collectionId } = req.body;
     const query = 'INSERT INTO collections (admin_id, material_id, quantity, price, user_id) VALUES (?, ?, ?, ?, ?)';
     db.query(query, [admin_id, material_id, quantity, price, collector_id], (err, result) => {
         if (err) {
@@ -65,9 +78,51 @@ const createCollection = (req, res) => {
             res.status(500).json({ error: 'Error creating collection' });
             return;
         }
-        const collectionId = result.insertId;
-        res.status(201).json({ id: collectionId, admin_id, material_id, quantity, price, collector_id });
+          
+        const updateQuery = 'UPDATE driver_collections SET status = "accepted" WHERE collection_id = ?';
+        db.query(updateQuery, [collectionId], (updateErr, updateResult) => {
+            if (updateErr) {
+                console.error('Error updating driver collection status:', updateErr);
+                res.status(500).json({ error: 'Error updating driver collection status' });
+                return;
+            } 
+            
+            res.status(201).json({ id: collectionId, admin_id, material_id, quantity, price, collector_id });
+        });
     });
 };
 
-export { createDriverCollection, getDriversCollection, deleteDriverCollection, createCollection };
+const getSupplierCollection = (req, res) => {
+    const query = `
+        SELECT 
+            supplier_collections.collection_id, 
+            supplier_collections.supplier_id, 
+            supplier_collections.quantity, 
+            DATE_FORMAT(supplier_collections.created_at, "%Y-%m-%d %H:%i:%s") AS created_at, 
+            DATE_FORMAT(supplier_collections.updated_at, "%Y-%m-%d %H:%i:%s") AS updated_at, 
+            suppliers.firstname AS supplier_name, 
+            materials.name AS material_name 
+        FROM 
+            supplier_collections 
+        LEFT JOIN 
+            suppliers ON suppliers.supplier_id = supplier_collections.supplier_id 
+        LEFT JOIN 
+            materials ON materials.material_id = supplier_collections.material_id;
+    `;
+
+    db.query(query, (err, result) => {
+        if (err) {
+            console.error('Error fetching collection:', err);
+            res.status(500).json({ error: 'Error fetching collection' });
+            return;
+        }
+        if (result.length === 0) {
+            res.status(404).json({ error: 'Collection not found' });
+            return;
+        }
+        res.json(result);
+    });
+};
+
+
+export { createDriverCollection, getDriversCollection, deleteDriverCollection, createCollection, getSupplierCollection };
