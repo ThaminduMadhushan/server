@@ -86,14 +86,39 @@ export const login = (req, res) => {
   });
 };
 
+// export const logout = (req, res) => {
+//   req.session.destroy((err) => {
+//     if (err) {
+//       console.error("Logout error:", err);
+//       return res.status(500).json({ error: "Logout failed" });
+//     }
+//     // Clear the session cookie
+//     res.clearCookie("connect.sid"); // Replace 'connect.sid' with your cookie name if different
+
+//     // Inspect response headers to verify if the cookie is cleared
+//     console.log("Response Headers:", res.getHeaders());
+
+//     return res.json({ message: "Logout successful" });
+//   });
+// };
+
+
 export const logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       console.error("Logout error:", err);
       return res.status(500).json({ error: "Logout failed" });
     }
-    // Clear the session cookie
-    res.clearCookie("connect.sid"); // Replace 'connect.sid' with your cookie name if different
+    
+    // Clear the session cookie by setting its expiration date to a past date
+    res.clearCookie("connect.sid", {
+      path: '/', // Path must match the cookie path
+      domain: 'localhost', // Domain must match the cookie domain
+      expires: new Date(0), // Set expiration date to a past date
+      httpOnly: true, // Ensure httpOnly matches the cookie settings
+      secure: false, // Set to true if using HTTPS
+      sameSite: 'Lax', // Set sameSite attribute
+    });
 
     // Inspect response headers to verify if the cookie is cleared
     console.log("Response Headers:", res.getHeaders());
@@ -101,3 +126,5 @@ export const logout = (req, res) => {
     return res.json({ message: "Logout successful" });
   });
 };
+
+
