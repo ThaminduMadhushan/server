@@ -15,10 +15,13 @@ import adminRoutes from "./routes/admin.js";
 import binRoutes from "./routes/bin.js";
 import binTypeRoutes from "./routes/binType.js";
 import driverRoutes from "./routes/driver.js";
-import Collection from "./routes/collection.js";
+import collectionRoutes from "./routes/collection.js";
+import supplierRoutes from "./routes/supplier.js";
+
+import { isAuthenticated } from "./middleware/authMiddleware.js";
 
 const app = express();
-// ser
+
 app.use(express.json());
 app.use(
   cors({
@@ -52,9 +55,20 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/bin", binRoutes);
 app.use("/api/binType", binTypeRoutes);
 app.use("/api/driver", driverRoutes);
-app.use("/api/collection", Collection);
+app.use("/api/collection", collectionRoutes);
+app.use("/api/supplier", supplierRoutes);
 
-
+// app.use("/api/products", isAuthenticated, productRoutes);
+// app.use("/api/orders", isAuthenticated, orderRoutes);
+// app.use("/api/materials", isAuthenticated, materialRoutes);
+// app.use("/api/employees", isAuthenticated, employeeRoutes);
+// app.use("/api/customer", isAuthenticated, customerRoutes);
+// app.use("/api/admin", isAuthenticated, adminRoutes);
+// app.use("/api/bin", isAuthenticated, binRoutes);
+// app.use("/api/binType", isAuthenticated, binTypeRoutes);
+// app.use("/api/driver", isAuthenticated, driverRoutes);
+// app.use("/api/collection", isAuthenticated, collectionRoutes);
+// app.use("/api/supplier", isAuthenticated, supplierRoutes);
 
 // Route to check if the user is authenticated
 app.get("/api/auth/authenticated", (req, res) => {
