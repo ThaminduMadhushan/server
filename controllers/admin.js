@@ -51,6 +51,7 @@ const getOrders = (req, res) => {
       });
   };
 
+ 
   const getAdmin = (req, res) => {
     const user_id = req.params.id;
     // Query to fetch customer details for the given user ID
