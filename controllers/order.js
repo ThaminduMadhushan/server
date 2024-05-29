@@ -176,4 +176,23 @@ const acceptOrder = (req, res) => {
     });
 };
 
-export { getOrder, createOrder, deleteOrder, updateOrder, acceptOrder, cancelOrder}; 
+const completeOrder = (req, res) => {
+    const orderId = req.params.id;
+    const adminId = req.body.adminId; // Get the admin ID from the request body
+  
+    const query = 'UPDATE orders SET status = "completed", admin_id = ? WHERE order_id = ?';
+    db.query(query, [adminId, orderId], (err, result) => {
+      if (err) {
+        console.error('Error canceling order:', err);
+        res.status(500).json({ error: 'Error canceling order' });
+        return;
+      }
+      if (result.affectedRows === 0) {
+        res.status(404).json({ error: 'Order not found' });
+        return;
+      }
+      res.status(200).json({ message: 'Order cancelled successfully' });
+    });
+  };
+
+export { getOrder, createOrder, deleteOrder, updateOrder, acceptOrder, cancelOrder, completeOrder }; 
