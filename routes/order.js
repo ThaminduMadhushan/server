@@ -6,7 +6,7 @@ import {
   updateOrder,
   acceptOrder,
   cancelOrder,
-  completeOrder
+  finishedOrder
 } from "../controllers/order.js";
 
 const router = express.Router();
@@ -17,6 +17,6 @@ router.delete("/:id", deleteOrder);
 router.put("/:id", updateOrder);
 router.put("/accept/:id", acceptOrder);
 router.put("/cancel/:id", cancelOrder);
-router.put("/complete/:id", completeOrder);
+router.put("/finished/:id", finishedOrder);
 
 export default router;
