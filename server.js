@@ -17,6 +17,9 @@ import binTypeRoutes from "./routes/binType.js";
 import driverRoutes from "./routes/driver.js";
 import collectionRoutes from "./routes/collection.js";
 import supplierRoutes from "./routes/supplier.js";
+import validateRoutes from "./routes/validate.js";
+import salaryRoutes from "./routes/salary.js";
+import bailerRoutes from "./routes/bailer.js";
 
 import { isAuthenticated } from "./middleware/authMiddleware.js";
 
@@ -57,6 +60,9 @@ app.use("/api/binType", binTypeRoutes);
 app.use("/api/driver", driverRoutes);
 app.use("/api/collection", collectionRoutes);
 app.use("/api/supplier", supplierRoutes);
+app.use("/api/validate", validateRoutes);
+app.use("/api/salary", salaryRoutes);
+app.use("/api/bailer", bailerRoutes);
 
 // app.use("/api/products", isAuthenticated, productRoutes);
 // app.use("/api/orders", isAuthenticated, orderRoutes);
