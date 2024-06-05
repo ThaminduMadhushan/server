@@ -124,5 +124,25 @@ const getSupplierCollection = (req, res) => {
     });
 };
 
+const getCollection = (req, res) => {
+    const query = `
+        SELECT * FROM collections`;
 
-export { createDriverCollection, getDriversCollection, deleteDriverCollection, createCollection, getSupplierCollection };
+    db.query(query, (err, result) => {
+        if (err) {
+            console.error('Error fetching collection:', err);
+            res.status(500).json({ error: 'Error fetching collection' });
+            return;
+        }
+        if (result.length === 0) {
+            res.status(404).json({ error: 'Collection not found' });
+            return;
+        }
+        res.json(result);
+
+    }); 
+
+};
+
+
+export { createDriverCollection, getDriversCollection, deleteDriverCollection, createCollection, getSupplierCollection, getCollection };
