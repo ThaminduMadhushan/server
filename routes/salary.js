@@ -1,5 +1,5 @@
 import express from "express";
-import { getParameters, addParameters, updateParameters, getSalary, saveSalary, driverCollection, bailerCollection  } from "../controllers/salary.js";
+import { getParameters, addParameters, updateParameters, getSalary, saveSalary, driverCollection, bailerCollection,   } from "../controllers/salary.js";
 
 const router = express.Router();
 
