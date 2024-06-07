@@ -67,13 +67,53 @@ const getSalary = (req, res) => {
     });
   };
 
-  const saveSalary = (req, res) => {
+  // const saveSalary = (req, res) => {
 
-    const { employee_id, admin_id, full_payment, total_quantity, target_bonus, status } = req.body;
+  //   const { employee_id, admin_id, full_payment, total_quantity, target_bonus, status } = req.body;
+  //   // Insert the new parameters into the database
+  //   const query =
+  //     "INSERT INTO salary (employee_id, admin_id, full_payment, total_quantity, target_bonus, status) VALUES (?, ?, ?, ?, ?, ?)";
+  //   db.query(query, [employee_id, admin_id, full_payment, total_quantity, target_bonus, status], (err, result) => {
+  //     if (err) {
+  //       console.error("Error adding salaries:", err);
+  //       res.status(500).json({ error: "Error adding salaries" });
+  //       return;
+  //     }
+  
+  //     res.status(200).json({ message: "Salaries added successfully" });
+  //   });
+  // };
+
+  const saveSalary = (req, res) => {
+    const { 
+      employee_id, 
+      admin_id, 
+      basic_salary, 
+      epf, 
+      bonus, 
+      monthly_target, 
+      unit_target_bonus,
+      target_bonus, 
+      full_payment, 
+      total_quantity, 
+      status 
+    } = req.body;
+  
     // Insert the new parameters into the database
-    const query =
-      "INSERT INTO salary (employee_id, admin_id, full_payment, total_quantity, target_bonus, status) VALUES (?, ?, ?, ?, ?, ?)";
-    db.query(query, [employee_id, admin_id, full_payment, total_quantity, target_bonus, status], (err, result) => {
+    const query = `
+      INSERT INTO salary (
+        employee_id, admin_id, basic_salary, epf, bonus, monthly_target, 
+        target_bonus, full_payment, total_quantity, status, unit_target_bonus
+      ) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+  
+    const values = [
+      employee_id, admin_id, basic_salary, epf, bonus, monthly_target, 
+      target_bonus, full_payment, total_quantity, status, unit_target_bonus
+    ];
+  
+    db.query(query, values, (err, result) => {
       if (err) {
         console.error("Error adding salaries:", err);
         res.status(500).json({ error: "Error adding salaries" });
@@ -83,6 +123,7 @@ const getSalary = (req, res) => {
       res.status(200).json({ message: "Salaries added successfully" });
     });
   };
+  
 
   // const driverCollection = (req, res) => {
   //   const query = "SELECT users.user_id, users.role, DATE_FORMAT(collections.updated_at, '%Y-%m-%d') AS date, collections.quantity FROM users LEFT JOIN collections ON users.user_id = collections.user_id WHERE role= 'driver'";
