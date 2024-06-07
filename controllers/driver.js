@@ -3,7 +3,7 @@ import db from "../connect.js";
 const getDriver = (req, res) => {
     const user_id = req.params.id;
 
-    const query = 'SELECT driver_id FROM drivers WHERE user_id = ?';
+    const query = 'SELECT * FROM drivers WHERE user_id = ?';
   
     // Execute the query with the user ID as a parameter
     db.query(query, [user_id], (err, results) => {
@@ -80,5 +80,70 @@ const getUserId = (req, res) => {
   });
 };
 
+
+
+const updateAbout = (req, res) => {
+  const supplier_id = req.params.id;
+  const { about } = req.body;
+  const query = 'UPDATE drivers SET about =? WHERE user_id = ?';
+  db.query(query, [about, supplier_id], (err, result) => {
+      if (err) {
+          console.error('Error updating about:', err);
+          res.status(500).json({ error: 'Error updating about' });
+          return;
+      }
+      if (result.affectedRows === 0) {
+          res.status(404).json({ error: 'Driver not found' });
+          return;
+      }
+      res.status(200).json({ message: 'About updated successfully' });
+  });
+};
+const updateDetails = (req, res) => {
+  const supplier_id = req.params.id;
+  const { firstname, lastname, address, telephone, nic } = req.body;
+
+  const query = `
+    UPDATE drivers 
+    SET firstname = ?, lastname = ?, address = ?, telephone = ?, nic = ? 
+    WHERE driver_id = ?
+  `;
+
+  db.query(query, [firstname, lastname, address, telephone, nic, supplier_id], (err, result) => {
+    if (err) {
+      console.error('Error updating driver details:', err);
+      res.status(500).json({ error: 'Error updating driver details' });
+      return;
+    }
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: 'Driver not found' });
+      return;
+    }
+    res.status(200).json({ message: 'Driver details updated successfully' });
+  });
+};
+
+const getSalary = (req, res) => {
+
+  const driver_id = req.params.id;
+
+  const query = 'SELECT salary.salary_id, admins.firstname AS admin_name, salary.basic_salary, salary.epf, salary.bonus, salary.full_payment, salary.total_quantity, salary.target_bonus, salary.status, DATE_FORMAT(salary.created_at, "%Y-%m-%d") AS created_at, salary.unit_target_bonus, salary.monthly_target FROM salary LEFT JOIN admins ON admins.admin_id = salary.admin_id WHERE employee_id  = ?';
+
+  // Execute the query with the user ID as a parameter
+  db.query(query, [driver_id], (err, results) => {
+    if (err) {
+      console.error('Error fetching driver: ', err);
+      res.status(500).json({ error: 'Error fetching driver' });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).json({ error: 'Driver not found for the given user ID' });
+      return;
+    }
+
+    res.json(results);
+  });
+};
   
-export { getDriver, getBin, getDriverCollection, getUserId };
+export { getDriver, getBin, getDriverCollection, getUserId, updateAbout, updateDetails, getSalary };
