@@ -70,7 +70,6 @@ const getBailingDetails = (req, res) => {
       b.bailing_id, 
       bailers.firstname AS bailer_firstname,
       bailers.lastname AS bailer_lastname, 
-      b.bailing_name, 
       materials.name AS material_name, 
       products.name AS product_name, 
       b.status, 
@@ -112,7 +111,6 @@ const getAcceptBailingDetails = (req, res) => {
       b.bailing_id, 
       bailers.firstname AS bailer_firstname,
       bailers.lastname AS bailer_lastname, 
-      b.bailing_name, 
       materials.name AS material_name, 
       products.name AS product_name, 
       b.status, 
@@ -147,11 +145,11 @@ const getAcceptBailingDetails = (req, res) => {
 };
 
 const createBailing = (req, res) => {
-  const {  bailer_id, bailing_name,  product_id, product_quantity, material_id, material_quantity } = req.body;
+  const {  bailer_id,  product_id, product_quantity, material_id, total_material_quantity } = req.body;
 
   // Insert the new material into the database
-  const query = 'INSERT INTO bailing_details (bailer_id, bailing_name, product_id, product_quantity, material_id, material_quantity, status) VALUES (?, ?, ?, ?, ?, ?, "pending")';
-  db.query(query, [bailer_id, bailing_name, product_id, product_quantity, material_id, material_quantity], (err, result) => {
+  const query = 'INSERT INTO bailing_details (bailer_id, product_id, product_quantity, material_id, material_quantity, status) VALUES (?, ?, ?, ?, ?, "pending")';
+  db.query(query, [bailer_id, product_id, product_quantity, material_id, total_material_quantity], (err, result) => {
     if (err) {
       console.error('Error creating bailing:', err);
       return res.status(500).json({ error: 'Error creating bailing.' });
@@ -159,8 +157,26 @@ const createBailing = (req, res) => {
     // Return the newly created material
     const bailingId = result.insertId;
 
-    res.status(201).json({ id: bailingId, bailer_id, bailing_name, product_id, product_quantity, material_id, material_quantity });
+    res.status(201).json({ id: bailingId, bailer_id, product_id, product_quantity, material_id, total_material_quantity });
   });
 };
 
-export { getBailer, getJobs, completeOrder, getBailingDetails, createBailing, getAcceptBailingDetails };
+const updateBailing = (req, res) => {
+
+  const bailing_id = req.params.id;
+
+  const { product_id, product_quantity, material_id, total_material_quantity } = req.body;
+
+  const query = 'UPDATE bailing_details SET product_id = ?, product_quantity =? , material_id = ?, material_quantity = ?, material_quantity WHERE bailing_id = ?';
+
+  db.query(query, [ product_id, product_quantity, material_id, total_material_quantity, bailing_id], (err, result) => {
+    if (err) {
+      console.error('Error updating bailing:', err);
+      return res.status(500).json({ error: 'Error updating bailing.' });
+    }
+
+    res.status(200).json({ message: 'Bailing updated successfully.' });
+  });
+};
+
+export { getBailer, getJobs, completeOrder, getBailingDetails, createBailing, getAcceptBailingDetails, updateBailing };
