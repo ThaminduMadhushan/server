@@ -195,7 +195,7 @@ const getOrders = (req, res) => {
   
     const acceptBailingQuery = `
       UPDATE bailing_details 
-      SET status = "accept", admin_id = ?, product_id = ?, product_quantity = ?, material_id = ?, material_quantity = ? 
+      SET status = "accept", admin_id = ?, product_id = ?, product_quantity = ?, material_id = ?, material_quantity = ?
       WHERE bailing_id = ?
     `;
   
