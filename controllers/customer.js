@@ -163,7 +163,7 @@ const updateDetails = (req, res) => {
   const query = `
     UPDATE customers 
     SET firstname = ?, lastname = ?, address = ?, telephone = ?, nic = ? 
-    WHERE user_id = ?
+    WHERE customer_id = ?
   `;
 
   db.query(query, [firstName, lastName, address, telephone, nic, customer_id], (err, result) => {
