@@ -83,10 +83,10 @@ const getUserId = (req, res) => {
 
 
 const updateAbout = (req, res) => {
-  const supplier_id = req.params.id;
+  const driver_id = req.params.id;
   const { about } = req.body;
   const query = 'UPDATE drivers SET about =? WHERE user_id = ?';
-  db.query(query, [about, supplier_id], (err, result) => {
+  db.query(query, [about, driver_id], (err, result) => {
       if (err) {
           console.error('Error updating about:', err);
           res.status(500).json({ error: 'Error updating about' });
