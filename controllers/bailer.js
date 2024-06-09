@@ -3,7 +3,7 @@ import db from "../connect.js";
 const getBailer = (req, res) => {
   const user_id = req.params.id;
 
-  const query = "SELECT bailer_id FROM bailers WHERE user_id = ?";
+  const query = "SELECT * FROM bailers WHERE user_id = ?";
 
   // Execute the query with the user ID as a parameter
   db.query(query, [user_id], (err, results) => {
@@ -179,4 +179,68 @@ const updateBailing = (req, res) => {
   });
 };
 
-export { getBailer, getJobs, completeOrder, getBailingDetails, createBailing, getAcceptBailingDetails, updateBailing };
+const getSalary = (req, res) => {
+
+  const bailer_id = req.params.id;
+
+  const query = 'SELECT salary.salary_id, admins.firstname AS admin_name, salary.basic_salary, salary.epf, salary.bonus, salary.full_payment, salary.total_quantity, salary.target_bonus, salary.status, DATE_FORMAT(salary.created_at, "%Y-%m-%d") AS created_at, salary.unit_target_bonus, salary.monthly_target FROM salary LEFT JOIN admins ON admins.admin_id = salary.admin_id WHERE employee_id  = ?';
+
+  // Execute the query with the user ID as a parameter
+  db.query(query, [bailer_id], (err, results) => {
+    if (err) {
+      console.error('Error fetching bailer: ', err);
+      res.status(500).json({ error: 'Error fetching bailer' });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).json({ error: 'Bailer not found for the given user ID' });
+      return;
+    }
+
+    res.json(results);
+  });
+};
+
+const updateAbout = (req, res) => {
+  const bailer_id = req.params.id;
+  const { about } = req.body;
+  const query = 'UPDATE bailers SET about =? WHERE user_id = ?';
+  db.query(query, [about, bailer_id], (err, result) => {
+      if (err) {
+          console.error('Error updating about:', err);
+          res.status(500).json({ error: 'Error updating about' });
+          return;
+      }
+      if (result.affectedRows === 0) {
+          res.status(404).json({ error: 'Bailer not found' });
+          return;
+      }
+      res.status(200).json({ message: 'About updated successfully' });
+  });
+};
+const updateDetails = (req, res) => {
+  const bailer_id = req.params.id;
+  const { firstname, lastname, address, telephone, nic } = req.body;
+
+  const query = `
+    UPDATE bailers 
+    SET firstname = ?, lastname = ?, address = ?, telephone = ?, nic = ? 
+    WHERE bailer_id = ?
+  `;
+
+  db.query(query, [firstname, lastname, address, telephone, nic, bailer_id], (err, result) => {
+    if (err) {
+      console.error('Error updating bailer details:', err);
+      res.status(500).json({ error: 'Error updating bailer details' });
+      return;
+    }
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: 'Bailer not found' });
+      return;
+    }
+    res.status(200).json({ message: 'Bailer details updated successfully' });
+  });
+};
+
+export { getBailer, getJobs, completeOrder, getBailingDetails, createBailing, getAcceptBailingDetails, updateBailing, getSalary, updateAbout, updateDetails };
