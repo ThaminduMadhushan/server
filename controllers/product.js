@@ -66,16 +66,16 @@ const deleteProduct = (req, res) => {
 
 const updateProduct = (req, res) => {
   const productId = req.params.id;
-  const { name, unit_price, total_quantity } = req.body;
+  const { product_name, unit_price, total_quantity, material_id, material_quantity } = req.body;
 
   // Validation
-  if (!name || !unit_price || !total_quantity) {
-      return res.status(400).json({ error: 'Please provide name and price.' });
+  if (!product_name || !unit_price || !total_quantity || !material_id || !material_quantity) {
+      return res.status(400).json({ error: 'Please provide name, price, quantity, material and material quantity.' });
   }
 
   // Update the product in the database
-  const query = 'UPDATE products SET name = ?, unit_price = ? , total_quantity = ? WHERE product_id = ?';
-  db.query(query, [name, unit_price, total_quantity, productId], (err, result) => {
+  const query = 'UPDATE products SET name = ?, unit_price = ? , total_quantity = ?, material_id = ?, material_quantity = ? WHERE product_id = ?';
+  db.query(query, [product_name, unit_price, total_quantity, material_id, material_quantity, productId], (err, result) => {
       if (err) {
           console.error('Error updating product:', err);
           return res.status(500).json({ error: 'Error updating product.' });
