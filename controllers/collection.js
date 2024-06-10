@@ -98,6 +98,7 @@ const getSupplierCollection = (req, res) => {
             supplier_collections.collection_id, 
             supplier_collections.supplier_id, 
             supplier_collections.quantity, 
+            supplier_collections.price,
             DATE_FORMAT(supplier_collections.created_at, "%Y-%m-%d %H:%i:%s") AS created_at, 
             DATE_FORMAT(supplier_collections.updated_at, "%Y-%m-%d %H:%i:%s") AS updated_at, 
             suppliers.firstname AS supplier_name, 
