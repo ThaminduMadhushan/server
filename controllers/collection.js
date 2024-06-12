@@ -69,28 +69,87 @@ const getDriversCollection =  (req, res) => {
 //     });
 // };
 
+// const createCollection = (req, res) => {
+//     const { admin_id, material_id, quantity, price, collector_id, collectionId } = req.body;
+//     const query = 'INSERT INTO collections (admin_id, material_id, quantity, price, user_id) VALUES (?, ?, ?, ?, ?)';
+//     db.query(query, [admin_id, material_id, quantity, price, collector_id], (err, result) => {
+//         if (err) {
+//             console.error('Error creating collection:', err);
+//             res.status(500).json({ error: 'Error creating collection' });
+//             return;
+//         }
+          
+//         const updateQuery = 'UPDATE driver_collections SET status = "accepted" WHERE collection_id = ?';
+//         db.query(updateQuery, [collectionId], (updateErr, updateResult) => {
+//             if (updateErr) {
+//                 console.error('Error updating driver collection status:', updateErr);
+//                 res.status(500).json({ error: 'Error updating driver collection status' });
+//                 return;
+//             } 
+            
+//             res.status(201).json({ id: collectionId, admin_id, material_id, quantity, price, collector_id });
+//         });
+//     });
+// };
 const createCollection = (req, res) => {
     const { admin_id, material_id, quantity, price, collector_id, collectionId } = req.body;
-    const query = 'INSERT INTO collections (admin_id, material_id, quantity, price, user_id) VALUES (?, ?, ?, ?, ?)';
-    db.query(query, [admin_id, material_id, quantity, price, collector_id], (err, result) => {
+    const insertCollectionQuery = 'INSERT INTO collections (admin_id, material_id, quantity, price, user_id) VALUES (?, ?, ?, ?, ?)';
+  
+    // Insert into collections
+    db.query(insertCollectionQuery, [admin_id, material_id, quantity, price, collector_id], (err, result) => {
         if (err) {
             console.error('Error creating collection:', err);
             res.status(500).json({ error: 'Error creating collection' });
             return;
         }
-          
-        const updateQuery = 'UPDATE driver_collections SET status = "accepted" WHERE collection_id = ?';
-        db.query(updateQuery, [collectionId], (updateErr, updateResult) => {
+
+        // Update driver_collections status
+        const updateDriverCollectionQuery = 'UPDATE driver_collections SET status = "accepted" WHERE collection_id = ?';
+        db.query(updateDriverCollectionQuery, [collectionId], (updateErr, updateResult) => {
             if (updateErr) {
                 console.error('Error updating driver collection status:', updateErr);
                 res.status(500).json({ error: 'Error updating driver collection status' });
                 return;
             } 
-            
-            res.status(201).json({ id: collectionId, admin_id, material_id, quantity, price, collector_id });
+
+            // Get bin_id from driver_collections
+            const getBinIdQuery = 'SELECT bin_id FROM driver_collections WHERE collection_id = ?';
+            db.query(getBinIdQuery, [collectionId], (binIdErr, binIdResult) => {
+                if (binIdErr) {
+                    console.error('Error fetching bin_id from driver collections:', binIdErr);
+                    res.status(500).json({ error: 'Error fetching bin_id from driver collections' });
+                    return;
+                }
+
+                const bin_id = binIdResult[0].bin_id;
+
+                // Update bins table total_quantity
+                const updateBinsQuery = 'UPDATE bins SET total_quantity = total_quantity + ? WHERE bin_id = ?';
+                db.query(updateBinsQuery, [quantity, bin_id], (binUpdateErr, binUpdateResult) => {
+                    if (binUpdateErr) {
+                        console.error('Error updating bins total_quantity:', binUpdateErr);
+                        res.status(500).json({ error: 'Error updating bins total_quantity' });
+                        return;
+                    }
+
+                    // Update materials table total_quantity
+                    const updateMaterialsQuery = 'UPDATE materials SET total_quantity = total_quantity + ? WHERE material_id = ?';
+                    db.query(updateMaterialsQuery, [quantity, material_id], (materialUpdateErr, materialUpdateResult) => {
+                        if (materialUpdateErr) {
+                            console.error('Error updating materials total_quantity:', materialUpdateErr);
+                            res.status(500).json({ error: 'Error updating materials total_quantity' });
+                            return;
+                        }
+
+                        res.status(201).json({ id: collectionId, admin_id, material_id, quantity, price, collector_id });
+                    });
+                });
+            });
         });
     });
 };
+
+
 
 const getSupplierCollection = (req, res) => {
     const query = `
