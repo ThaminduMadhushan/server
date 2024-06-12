@@ -20,6 +20,7 @@ import supplierRoutes from "./routes/supplier.js";
 import validateRoutes from "./routes/validate.js";
 import salaryRoutes from "./routes/salary.js";
 import bailerRoutes from "./routes/bailer.js";
+import chartDetailsRoutes from "./routes/chartDetails.js";
 
 import { isAuthenticated } from "./middleware/authMiddleware.js";
 
@@ -63,6 +64,7 @@ app.use("/api/supplier", supplierRoutes);
 app.use("/api/validate", validateRoutes);
 app.use("/api/salary", salaryRoutes);
 app.use("/api/bailer", bailerRoutes);
+app.use("/api/chart", chartDetailsRoutes);
 
 // app.use("/api/products", isAuthenticated, productRoutes);
 // app.use("/api/orders", isAuthenticated, orderRoutes);
