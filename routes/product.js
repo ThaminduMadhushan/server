@@ -1,5 +1,5 @@
 import express from 'express';
-import { getProducts, createProduct, deleteProduct, updateProduct } from '../controllers/product.js';
+import { getProducts, createProduct, deleteProduct, updateProduct, changeStatusProduct, getDisabledProducts, changeStatusDisableProduct } from '../controllers/product.js';
 
 
 const router = express.Router();
@@ -12,6 +12,12 @@ router.post('/', createProduct);
 router.delete('/:id', deleteProduct); // Define the delete route
 
 router.put('/:id', updateProduct);
+
+router.put('/changeStatus/:id', changeStatusProduct);
+
+router.get('/disabled', getDisabledProducts);
+
+router.put('/changeStatusDisable/:id', changeStatusDisableProduct);
 
 export default router;
 
