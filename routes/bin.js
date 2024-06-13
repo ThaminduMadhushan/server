@@ -1,5 +1,5 @@
 import express from 'express';
-import { getBin, createBin, deleteBin, updateBin } from '../controllers/bin.js';
+import { getBin, createBin, deleteBin, updateBin, getDisableBin, changeStatusDisableBin, changeStatusEnableBin } from '../controllers/bin.js';
 
 
 const router = express.Router();
@@ -12,5 +12,11 @@ router.post('/', createBin);
 router.delete('/:id', deleteBin); // Define the delete route
 
 router.put('/:id', updateBin);
+
+router.get('/disable', getDisableBin);
+
+router.put('/disable/:id', changeStatusDisableBin);
+
+router.put('/enable/:id', changeStatusEnableBin);
 
 export default router;
